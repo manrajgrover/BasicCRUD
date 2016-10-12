@@ -22,7 +22,7 @@
       $this->password = $_password;
       $this->dbName = $_dbName;
     }
-    
+
     /**
      * Connect to database
      * @return Object Connection object
@@ -37,18 +37,6 @@
         $this->conn = new PDO("mysql:host=$this->dbHost:$this->port;dbname=$this->dbName", $this->username, $this->password, $options);
       }
       return $this->conn;
-    }
-
-    /**
-     * Executes the query and returns the fetched rows
-     * @param  Object $_query Prepared query to be executed
-     * @param  String $params Parameters to be used in prepared query
-     * @return Array          Array of rows fetched from database
-     */
-    public function query($_query, $params = null) {
-      $db_connect = $this->connect();
-      $_query->execute($params);
-      return $_query->fetchAll();
     }
   }
 ?>
