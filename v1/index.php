@@ -43,7 +43,7 @@
       $allParams = $request->getQueryParams();
       $validate = isValid($allParams);
       if($validate['error'] === false) {
-        
+
         $params = array(
           'name' => $allParams['name'],
           'email' => $allParams['email'],
@@ -79,6 +79,51 @@
       }
     } catch(PDOException $Exception) {
       $arrResponse = array('error' => true, 'message' => 'Server is unable to get data');
+      return $response->withJson($arrResponse);
+    }
+
+  });
+
+  /**
+   * Matches route to /employee/new and creates a new employee
+   * @return JSON     Whether employee was created or not
+   */
+  $app->get('/employee/{id}', function (Request $request, Response $response) use ($app) {
+    try {
+      /**
+       * Create Database instance
+       * @var Object Database Access Class
+       */
+      $db = new DbAccess('localhost', '8889', 'root', 'root', 'employees');
+
+      /**
+       * Connect to Database
+       * @var Object
+       */
+      $db_connect = $db->connect();
+
+      $emp_id = ((int) $request->getAttribute('id'));
+
+      /**
+       * Prepare query for getting details of doctors on that page
+       * @var String
+       */
+      $prepare_query = "SELECT * FROM `employee` WHERE `id` = :id";
+      $query = $db_connect->prepare($prepare_query);
+      $query->execute(array('id' => $emp_id));
+
+      $results = $query->fetchAll();
+
+      if (count($results) > 0) {
+        return $response->withJson($results[0]);
+      }
+      else {
+        return $response->withJson(array('error'=> true, 'message' => 'No employee exist with this id'));
+      }
+
+    } catch(PDOException $Exception) {
+      $arrResponse = array('error' => true, 'message' => 'Server is unable to get data');
+      return $response->withJson($arrResponse);
     }
   });
 
