@@ -127,5 +127,67 @@
     }
   });
 
+  /**
+   * Matches route to /employee/new and creates a new employee
+   * @return JSON     Whether employee was created or not
+   */
+  $app->put('/employee/{id}', function (Request $request, Response $response) use ($app) {
+    try {
+      /**
+       * Create Database instance
+       * @var Object Database Access Class
+       */
+      $db = new DbAccess('localhost', '8889', 'root', 'root', 'employees');
+
+      /**
+       * Connect to Database
+       * @var Object
+       */
+      $db_connect = $db->connect();
+      $allParams = $request->getQueryParams();
+      $emp_id = ((int) $request->getAttribute('id'));
+
+      $validate = isValid($allParams);
+
+      if($validate['error'] === false) {
+
+        $params = array(
+          'id' => $emp_id,
+          'name' => $allParams['name'],
+          'email' => $allParams['email'],
+          'contact' => $allParams['contact'],
+          'designation' => $allParams['designation']
+        );
+
+        /**
+         * Prepare query for getting details of doctors on that page
+         * @var String
+         */
+        $prepare_query = "UPDATE `employee` SET `name`=:name, `email`=:email, `contact`=:contact, `designation`=:designation WHERE `id`=:id";
+        $query = $db_connect->prepare($prepare_query);
+
+        if ($query->execute($params)) {
+          $arrResponse = array('error' => false, 'message' => 'Row updated');
+        }
+        else {
+          $arrResponse = array('error' => true, 'message' => 'An error occured');
+        }
+
+        /**
+         * Send JSON as response
+         */
+        return $response->withJson($arrResponse);
+
+      }
+      else {
+        return $response->withJson($validate);
+      }
+
+    } catch(PDOException $Exception) {
+      $arrResponse = array('error' => true, 'message' => 'Server is unable to get data');
+      return $response->withJson($arrResponse);
+    }
+  });
+
   $app->run();
 ?>

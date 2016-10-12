@@ -11,6 +11,10 @@
     return preg_match("/^(0|\+91)?[789]\d{9}$/", $contact) && strlen($contact) < 15;
   }
 
+  function isValidDesignation($designation) {
+    return !empty($designation) && is_string($designation);
+  }
+
   function isValid($data) {
     $arrResponse = array('error' => false, 'message' => array());
     if (!isValidName($data['name'])) {
@@ -26,6 +30,11 @@
     if (!isValidContact($data['contact'])) {
       $arrResponse['error'] = true;
       array_push($arrResponse['message'], "Invalid Contact");
+    }
+
+    if(!isValidDesignation($data['designation'])) {
+      $arrResponse['error'] = true;
+      array_push($arrResponse['message'], "Invalid Designation");
     }
 
     return $arrResponse;
