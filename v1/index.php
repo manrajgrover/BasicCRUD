@@ -189,5 +189,46 @@
     }
   });
 
+  /**
+   * Matches route to /employee/new and creates a new employee
+   * @return JSON     Whether employee was created or not
+   */
+  $app->delete('/employee/{id}', function (Request $request, Response $response) use ($app) {
+    try {
+      /**
+       * Create Database instance
+       * @var Object Database Access Class
+       */
+      $db = new DbAccess('localhost', '8889', 'root', 'root', 'employees');
+
+      /**
+       * Connect to Database
+       * @var Object
+       */
+      $db_connect = $db->connect();
+
+      $emp_id = ((int) $request->getAttribute('id'));
+
+      /**
+       * Prepare query for getting details of doctors on that page
+       * @var String
+       */
+      $prepare_query = "DELETE FROM `employee` WHERE `id` = :id";
+      $query = $db_connect->prepare($prepare_query);
+      $query->execute(array('id' => $emp_id));
+
+      if ($query->rowCount() > 0) {
+        return $response->withJson(array('error' => false, 'message' => 'Employee deleted!'));
+      }
+      else {
+        return $response->withJson(array('error' => true, 'message' => 'No employee exist with this id'));
+      }
+
+    } catch(PDOException $Exception) {
+      $arrResponse = array('error' => true, 'message' => 'Server is unable to get data');
+      return $response->withJson($arrResponse);
+    }
+  });
+
   $app->run();
 ?>
