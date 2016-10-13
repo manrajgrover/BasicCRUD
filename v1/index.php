@@ -13,11 +13,7 @@
    * Slim App instance
    * @var Object
    */
-  $app = new \Slim\App([
-      'settings' => [
-          'displayErrorDetails' => true
-      ]
-  ]);
+  $app = new \Slim\App();
 
   /**
    * Matches route to /employee/new and creates a new employee
